@@ -1,0 +1,58 @@
+project('dinit', 'cpp',
+  default_options: [
+    'b_lto=true',
+    'b_ndebug=if-release',
+    'b_pie=true',
+    'buildtype=@0@'.format(get_option('build_type')),
+    'c_std=c++11',
+    'strip=@0@'.format(get_option('build_type') in ['minsize', 'release']),
+    'warning_level=3',
+  # 'werror=true',
+  ],
+  license: 'Apache-2.0',
+  version: '0.9.1-development',
+)
+
+dinit_ver = meson.project_version().split('-')[0]
+
+dinit_inc = [include_directories('include')]
+
+dasynq_dep = dependency('dasynq', fallback: ['libdasynq', 'dasynq_dep'])
+
+dinit_src = files(
+  'src/dinit/baseproc_service.cpp',
+  'src/dinit/log.cpp',
+  'src/dinit/run_child_proc.cpp',
+  'src/control.cpp',
+  'src/dinit.cpp',
+  'src/load_service.cpp',
+  'src/options_processing.cpp',
+  'src/proc_service.cpp',
+  'src/service.cpp',
+)
+
+executable('dinit', 'src/dinit/main.cpp', dinit_src,
+  dependencies: [dasynq_dep],
+  include_directories: dinit_inc,
+  install: true,
+)
+
+dinitcheck_src = files('src/options_processing.cpp')
+
+executable('dinitcheck', 'src/dinitcheck/main.cpp', dinitcheck_src,
+  dependencies: [dasynq_dep],
+  include_directories: dinit_inc,
+  install: true,
+)
+
+executable('dinitctl', 'src/dinitctl/main.cpp',
+  dependencies: [dasynq_dep],
+  include_directories: dinit_inc,
+  install: true,
+)
+
+executable('shutdown', 'src/shutdown/main.cpp',
+  dependencies: [dasynq_dep],
+  include_directories: dinit_inc,
+  install: true,
+)

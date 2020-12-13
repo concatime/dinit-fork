@@ -1,0 +1,3 @@
+[submodule "subprojects/libdasynq"]
+	path = subprojects/libdasynq
+	url = https://github.com/concatime/libdasynq-fork.git
